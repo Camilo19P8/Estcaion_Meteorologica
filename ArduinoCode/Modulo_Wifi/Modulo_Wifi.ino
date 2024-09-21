@@ -4,15 +4,6 @@
 const char* ssid = "CLARO_ACF0";
 const char* password = "194112045";
 
-float Temperatura = 22.5;
-float Humedad = 80;
-float Intensidad_Luz = 53;
-float Presipitacion = 802;
-float AIR_QUALITY = 74;
-float Gases_toxicos = 150;
-float Luz_UV = 1.655;
-float Presion_Atmosferica = 75200;
-
 void setup() {
   Serial.begin(9600);
 
@@ -35,10 +26,10 @@ void loop() {
     HTTPClient http;
 
     String serverPath = "http://192.168.0.12/ENMA_proyect/test_date.php";  // URL del servidor
+    inputString = Serial.readString();  // Lee los datos recibidos y los convierte en String
 
-    String setData = "Temperatura=" + String(Temperatura) + "&Humedad=" + String(Humedad) + "&Intensidad_Luz=" + String(Intensidad_Luz) + "&Presipitacion=" + String(Presipitacion) + "&AIR_QUALITY=" + String(AIR_QUALITY) + "&Gases_toxicos=" + String(Gases_toxicos) + "&Luz_UV=" + String(Luz_UV) + "&Presion_Atmosferica=" + String(Presion_Atmosferica);
-
-    http.begin(client, serverPath + "?" + setData);  // Cambiado para usar WiFiClient
+    http.begin(client, serverPath + "?" + inputString);  // Cambiado para usar WiFiClient
+    Serial.println(inputString);  // Imprime el string recibido
 
     int httpResponseCode = http.GET();  // Hace la solicitud GET
 
@@ -55,6 +46,6 @@ void loop() {
   } else {
     Serial.println("Desconectado de Wi-Fi");
   }
-
-  delay(10000);  // Espera 10 segundos antes de enviar otra solicitud
+  delay(5000);  // Espera 10 segundos antes de enviar otra solicitud
 }
+

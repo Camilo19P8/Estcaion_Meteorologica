@@ -1,9 +1,10 @@
+
 //-------------------------------------------------------------------------------------
 /*
  * Atmospheric CO2 Level..............400ppm
  * Average indoor co2.............350-450ppm
  * Maxiumum acceptable co2...........1000ppm
- * Dangerous co2 levels.............>2000ppm
+ * Dangerous co2 levels.............2000ppm
  */
 //-------------------------------------------------------------------------------------
 /*
@@ -95,6 +96,7 @@ void setup() {
   //-------------------------------------------------------------------------------------
   // inicializa la comunicación serial
   Serial.begin(9600);
+  Serial1.begin(9600);
   //mySerial.begin(9600); configurar punto serial 
   //-------------------------------------------------------------------------------------
   pinMode(airQualityPin, INPUT);  //MQ135 conjunto de alimentación analógica para entrada
@@ -137,6 +139,8 @@ void loop() {
   } else {
   }
   datos();
+    // Recolectar y enviar datos periódicamente
+  enviarDatos();
   Pantalla(contador);
 }
 //-------------------------------------------------------------------------------------
@@ -148,14 +152,12 @@ void datos() {
   Serial.print(luz());
   Serial.print(",");
   //-------------------------------------------------------------------------------------
-  if (sensor.measure()) {
 
-    Serial.print("Temperature (°C):, ");
-    Serial.print(Temperatura());
-    Serial.print(",");
-    Serial.print("Humidity (%RH): ,");
-    Serial.print(humedad());
-  }
+  Serial.print("Temperature (°C):, ");
+  Serial.print(Temperatura());
+  Serial.print(",");
+  Serial.print("Humidity (%RH): ,");
+  Serial.print(humedad());
   //-------------------------------------------------------------------------------------
   Serial.print(",AirQuality=,");
   Serial.print(co2());  //imprime el valor leído
@@ -189,15 +191,32 @@ void datos() {
     Serial.println("Extremadamente alto,");
   }
   //-------------------------------------------------------------------------------------
-
-  String setData = "Temperatura=" + String(Temperatura()) + "&Humedad=" + String(humedad()) + "&Intensidad_Luz=" + String(luz()) + "&Presipitacion=" + String(lluvia()) + "&AIR_QUALITY=" + String(co2()) + "&Gases_toxicos=" + String(mq9()) + "&Luz_UV=" + String(ML5811()) + "&Presion_Atmosferica=" + String(barometer());
-
   //-------------------------------------------------------------------------------------
-  delay(0);
+  delay(5000);
+
   //-------------------------------------------------------------------------------------
   Serial.write(0x0d);
   //-------------------------------------------------------------------------------------
 }
+void enviarDatos() {
+  int serial = digitalRead(31);
+  String data = "";
+    data += "Temperatura=" + String(Temperatura()) + "&";
+    data += "Humedad=" + String(humedad()) + "&";
+    data += "Intensidad_Luz=" + String(luz()) + "&";
+    data += "Precipitacion=" + String(lluvia()) + "&";
+    data += "AIR_QUALITY=" + String(co2()) + "&";
+    data += "Gases_toxicos=" + String(mq9()) + "&";
+    data += "Luz_UV=" + String(ML5811()) + "&";
+    data += "Presion_Atmosferica=" + String(barometer());
+  
+  if (serial == 1) {
+    Serial1.println(data);  // Enviar datos al módulo Wi-Fi
+    delay(5000);
+  }
+
+}
+
 //-------------------------------------------------------------------------------------
 float luz() {
 //-------------------------------------------------------------------------------------
@@ -208,7 +227,7 @@ float luz() {
   //-------------------------------------------------------------------------------------
   return LDR_var;
   //-------------------------------------------------------------------------------------
-  delay(1000);
+  delay(0);
   // retardo de 1 segundo
 }
 //-------------------------------------------------------------------------------------
@@ -219,7 +238,7 @@ float Temperatura() {
   float temperature = sensor.getTemperature();
   return temperature;
   //-------------------------------------------------------------------------------------
-  delay(1000);
+  delay(0);
 }
 float humedad(){
   float humidity = sensor.getHumidity();
@@ -253,7 +272,7 @@ float co2() {
   //-------------------------------------------------------------------------------------
   return co2ppm;
   //-------------------------------------------------------------------------------------
-  delay(1000);
+  delay(0);
 }
 //-------------------------------------------------------------------------------------
 //Leer datos de sensor FC-37
@@ -264,7 +283,7 @@ float lluvia() {
   sensorValueLluevi = analogRead(sensorPin);  // Leer el valor del sensor
   return sensorValueLluevi;
   //-------------------------------------------------------------------------------------
-  delay(1000);  // Esperar un segundo antes de leer el valor del sensor nuevamente
+  delay(0);  // Esperar un segundo antes de leer el valor del sensor nuevamente
 }
 //-------------------------------------------------------------------------------------
 //Leer datos de MÓDULO MULTISENSOR 10 DOF GY-801
@@ -283,7 +302,7 @@ void accelerometer() {
   Serial.println(az);
   Serial.println(" ");
   //-------------------------------------------------------------------------------------
-  delay(1000);
+  delay(0);
 }
 //-------------------------------------------------------------------------------------
 //Leer datos de MÓDULO MULTISENSOR 10 DOF GY-801
@@ -300,7 +319,7 @@ void gyroscope() {
   Serial.println(avz);
   Serial.println(" ");
   //-------------------------------------------------------------------------------------
-  delay(1000);
+  delay(0);
 }
 //-------------------------------------------------------------------------------------
 //Leer datos de MÓDULO MULTISENSOR 10 DOF GY-801
@@ -331,7 +350,7 @@ float barometer() {
   //-------------------------------------------------------------------------------------
   return pressure;
   //-------------------------------------------------------------------------------------
-  delay(1000);
+  delay(0);
 }
 //-------------------------------------------------------------------------------------
 //Leer datos de MÓDULO MULTISENSOR 10 DOF GY-801
@@ -358,7 +377,7 @@ void magneto() {
   Serial.print("heading:\t");
   Serial.println(heading * 180 / M_PI);
   //-------------------------------------------------------------------------------------
-  delay(1000);
+  delay(0);
 }
 //-------------------------------------------------------------------------------------
 //Leer datos de sensor mq-9
@@ -369,7 +388,7 @@ float mq9() {
   //-------------------------------------------------------------------------------------
   return sensorValue2;
   //-------------------------------------------------------------------------------------
-  delay(1000);
+  delay(0);
 }
 //-------------------------------------------------------------------------------------
 //Leer datos de sensor GY-ML8511 
@@ -383,7 +402,7 @@ float ML5811() {
   // Turn on the blacklight
   return UV,4;
   //-------------------------------------------------------------------------------------
-  delay(1000);
+  delay(0);
 }
 //-------------------------------------------------------------------------------------
 void Pantalla(int x){
@@ -503,7 +522,7 @@ void Pantalla(int x){
       // Second row
       lcd.setCursor(0, 1);
       lcd.print("   0  ---  0   ");
-      delay(1000);
+      delay(0);
 
       break;
     break;
