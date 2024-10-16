@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
+import 'screens/login_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(WeatherMonitoringApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class WeatherMonitoringApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Weather Monitoring',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text("ENMA"),
+        brightness: Brightness.dark,
+        primaryColor: Colors.blueGrey[800],
+        scaffoldBackgroundColor: Colors.grey[900],
+        buttonTheme: ButtonThemeData(
+          buttonColor: Colors.tealAccent[400],
         ),
-        body: const Center(
-          child: Text("sapo hijueputa"),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.white70),
+          bodyMedium: TextStyle(color: Colors.white),
         ),
       ),
+      debugShowCheckedModeBanner: false,
+      home: LoginScreen(),
     );
   }
 }
